@@ -71,9 +71,9 @@ async function storeDataToDb(recipes) {
                     [
                         parsedContent.title || recipe.name,
                         parsedContent.description || "",
-                        (parsedContent.authors || []).join(", "),
-                        (parsedContent.tags || []).join(", "),
-                        (parsedContent.ingredients || []).join(", "),
+                        JSON.stringify(parsedContent.authors || []),
+                        JSON.stringify(parsedContent.tags || []),
+                        JSON.stringify(parsedContent.ingredients || []),
                         recipe.imageUrl,
                         parsedContent.cooking_time || "",
                         parsedContent.instructions || "",
