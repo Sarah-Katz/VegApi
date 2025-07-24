@@ -12,7 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "toml": "^3.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.0"
