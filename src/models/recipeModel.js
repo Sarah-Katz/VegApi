@@ -12,6 +12,8 @@ const db = require("../database");
  * @property {string} image - The URL of the recipe's image.
  * @property {string} cookingTime - The time required to cook the recipe.
  * @property {string} instructions - The cooking instructions for the recipe.
+ * @property {Array<string>} parsedIngredients - Parsed list of ingredients.
+ * @property {Array<string>} parsedInstructions - Parsed list of instruction sentences.
  */
 class Recipe {
     constructor(id, title, description, authors, tags, ingredients, image, cookingTime, instructions) {
@@ -24,6 +26,22 @@ class Recipe {
         this.image = image;
         this.cookingTime = cookingTime;
         this.instructions = instructions;
+        this.parsedIngredients = this.parseIngredients(instructions);
+        this.parsedInstructions = this.parseInstructions(instructions);
+    }
+
+    parseIngredients(instructions) {
+        const ingredientsSection = instructions.split("## Préparation")[0];
+        const ingredientsList = ingredientsSection.match(/^\* [^\n]+/gm) || [];
+        return ingredientsList.map(item => item.replace(/^\* /, '').trim());
+    }
+
+    parseInstructions(instructions) {
+        const instructionsSection = instructions.split("## Préparation")[1] || '';
+        // Split by period or newline followed by an asterisk
+        const sentences = instructionsSection.split(/\.|\n\*/).map(sentence => sentence.trim()).filter(sentence => sentence.length > 0);
+        // Remove the "* " prefix from any instruction lines
+        return sentences.map(sentence => sentence.startsWith('*') ? sentence.replace(/^\* /, '') : sentence);
     }
 }
 
