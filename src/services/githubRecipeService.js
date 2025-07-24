@@ -9,6 +9,12 @@ const REPO_PATH = "content";
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
+/**
+ * Fetches recipes from a GitHub repository, retrieving their content and associated metadata.
+ *
+ * @returns {Promise<Array>} A promise that resolves to an array of recipe data.
+ * @throws Will throw an error if the request to GitHub fails.
+ */
 async function fetchRecipes() {
     try {
         const headers = {
@@ -58,14 +64,24 @@ async function fetchRecipes() {
     }
 }
 
+/**
+ * Stores an array of recipe objects into the database.
+ *
+ * @param {Array} recipes - An array of recipe objects to be stored.
+ * Each recipe object should contain the following properties:
+ *   - {string} category - The category of the recipe.
+ *   - {string} name - The name of the recipe.
+ *   - {string} content - The content of the recipe in markdown format.
+ *   - {string} imageUrl - The URL of the recipe's image.
+ *
+ * @returns {Promise<void>} A promise that resolves when all recipes have been successfully stored in the database.
+ * Throws an error if any of the database operations fail.
+ */
 async function storeDataToDb(recipes) {
     try {
-        for (const recipe of recipes) {
-            // Manually parse the recipe content to extract relevant fields
+        const dbPromises = recipes.map((recipe) => {
             const parsedContent = manualParseRecipeContent(recipe.content);
-            console.log(`Storing recipe: ${recipe.name} in category: ${recipe.category}`);
-            console.log(parsedContent);
-            await new Promise((resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 db.run(
                     `INSERT INTO recipes (title, description, authors, tags, ingredients, image, cookingTime, instructions) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
@@ -86,7 +102,9 @@ async function storeDataToDb(recipes) {
                     }
                 );
             });
-        }
+        });
+
+        await Promise.all(dbPromises);
         console.log("Recipes stored in the database successfully.");
     } catch (error) {
         console.error("Error storing recipes in the database:", error);
@@ -94,6 +112,19 @@ async function storeDataToDb(recipes) {
     }
 }
 
+/**
+ * Parses the content of a recipe in markdown format to extract structured data.
+ *
+ * @param {string} content - The markdown content of the recipe, expected to contain metadata in TOML format.
+ * @returns {Object} An object containing the parsed recipe data, including:
+ *   - {string} title
+ *   - {string} description
+ *   - {Array<string>} authors
+ *   - {Array<string>} tags
+ *   - {Array<string>} ingredients
+ *   - {string} cooking_time
+ *   - {string} instructions
+ */
 function manualParseRecipeContent(content) {
     const parsedContent = {};
 
