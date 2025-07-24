@@ -6,9 +6,9 @@ const db = require("../database");
  * @property {number} id - The unique identifier for the recipe.
  * @property {string} title - The title of the recipe.
  * @property {string} description - A brief description of the recipe.
- * @property {string} authors - The authors of the recipe.
- * @property {string} tags - Tags associated with the recipe.
- * @property {string} ingredients - The ingredients required for the recipe.
+ * @property {Array<string>} authors - The authors of the recipe.
+ * @property {Array<string>} tags - Tags associated with the recipe.
+ * @property {Array<string>} ingredients - The ingredients required for the recipe.
  * @property {string} image - The URL of the recipe's image.
  * @property {string} cookingTime - The time required to cook the recipe.
  * @property {string} instructions - The cooking instructions for the recipe.
@@ -49,9 +49,9 @@ exports.getAllRecipes = () => {
                     row.id,
                     row.title,
                     row.description,
-                    row.authors,
-                    row.tags,
-                    row.ingredients,
+                    JSON.parse(row.authors),
+                    JSON.parse(row.tags),
+                    JSON.parse(row.ingredients),
                     row.image,
                     row.cookingTime,
                     row.instructions
@@ -82,9 +82,9 @@ exports.getRecipeById = (id) => {
                 row.id,
                 row.title,
                 row.description,
-                row.authors,
-                row.tags,
-                row.ingredients,
+                JSON.parse(row.authors),
+                JSON.parse(row.tags),
+                JSON.parse(row.ingredients),
                 row.image,
                 row.cookingTime,
                 row.instructions
